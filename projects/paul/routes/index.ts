@@ -1,5 +1,4 @@
 import express, { Request, Response } from 'express';
-
 import Joi from 'joi';
 
 const messageSchema = Joi.object({
@@ -18,10 +17,12 @@ rootRouter.post('/', (request: Request, response: Response) => {
   const { error } = messageSchema.validate(body);
 
   if (error) {
-    return response
-      .status(400)
-      .send('Payload should have "{message: "something" }" ');
+    const errors = error.details.map(({ message }) => message);
+
+    return response.status(400).send({ errors: [...errors] });
   }
+
+  // TODO: trigger nats message2
 
   return response.send({ message: 'message sent to' });
 });

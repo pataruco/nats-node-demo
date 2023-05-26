@@ -1,4 +1,5 @@
-import { NextFunction, Request, Response } from 'express';
+import type { NextFunction, Request, Response } from 'express';
+import logger from '../libs/logger';
 
 const errorHandlerMiddleware = (
   error: Error,
@@ -6,10 +7,14 @@ const errorHandlerMiddleware = (
   response: Response,
   next: NextFunction,
 ) => {
-  const { message } = error;
-  response.status(500).send({
-    message,
-  });
+  if (error) {
+    const { message } = error;
+    response.status(500).send({
+      message,
+    });
+
+    logger.error({ error });
+  }
 };
 
 export default errorHandlerMiddleware;

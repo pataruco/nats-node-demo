@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from 'express';
+import type { NextFunction, Request, Response } from 'express';
 import logger from '../libs/logger';
 
 const httpLoggerMiddleware = async (
@@ -6,11 +6,16 @@ const httpLoggerMiddleware = async (
   response: Response,
   next: NextFunction,
 ) => {
+  const start = Date.now();
+  next();
+  const duration = Date.now() - start;
   const { method, url, hostname, body } = request;
   const { statusCode, statusMessage } = response;
-  logger.info({ request: { method, url, hostname, body } });
-  logger.info({ response: { url, statusCode, statusMessage } });
-  next();
+  logger.info({
+    request: { method, url, hostname, body },
+    response: { url, statusCode, statusMessage },
+    duration,
+  });
 };
 
 export default httpLoggerMiddleware;
