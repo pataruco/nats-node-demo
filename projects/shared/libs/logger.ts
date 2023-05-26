@@ -3,12 +3,7 @@ import winston from 'winston';
 const { createLogger, format, transports } = winston;
 const { combine, timestamp, prettyPrint, json, colorize } = format;
 
-export enum Service {
-  SERVER = 'SERVER',
-  DATABASE = 'DATABASE',
-}
-
-const logger = createLogger({
+export const logger = createLogger({
   format: combine(
     timestamp(),
     prettyPrint(),
@@ -20,5 +15,3 @@ const logger = createLogger({
   transports: [new transports.Console()],
   exitOnError: false,
 });
-
-export default logger;

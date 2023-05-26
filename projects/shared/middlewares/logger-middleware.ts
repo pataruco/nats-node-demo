@@ -1,7 +1,7 @@
 import type { NextFunction, Request, Response } from 'express';
-import logger from '../libs/logger';
+import { logger } from '../libs/logger';
 
-const httpLoggerMiddleware = async (
+export const httpLoggerMiddleware = async (
   request: Request,
   response: Response,
   next: NextFunction,
@@ -17,5 +17,3 @@ const httpLoggerMiddleware = async (
     duration,
   });
 };
-
-export default httpLoggerMiddleware;

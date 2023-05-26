@@ -1,7 +1,7 @@
 import type { NextFunction, Request, Response } from 'express';
-import logger from '../libs/logger';
+import { logger } from '../libs/logger';
 
-const errorHandlerMiddleware = (
+export const errorHandlerMiddleware = (
   error: Error,
   _request: Request,
   response: Response,
@@ -16,5 +16,3 @@ const errorHandlerMiddleware = (
     logger.error({ error });
   }
 };
-
-export default errorHandlerMiddleware;

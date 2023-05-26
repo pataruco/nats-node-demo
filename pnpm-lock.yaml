@@ -6,9 +6,6 @@ importers:
 
   projects/paul:
     dependencies:
-      cors:
-        specifier: ^2.8.5
-        version: 2.8.5
       dotenv:
         specifier: ^16.0.3
         version: 16.0.3
@@ -21,9 +18,9 @@ importers:
       nats:
         specifier: ^2.14.0
         version: 2.14.0
-      winston:
-        specifier: ^3.8.2
-        version: 3.8.2
+      shared:
+        specifier: workspace:*
+        version: link:../shared
     devDependencies:
       '@types/express':
         specifier: ^4.17.17
@@ -34,6 +31,22 @@ importers:
       ts-node:
         specifier: ^10.9.1
         version: 10.9.1(@types/node@20.2.4)(typescript@5.0.4)
+      typescript:
+        specifier: ^5.0.4
+        version: 5.0.4
+
+  projects/shared:
+    dependencies:
+      express:
+        specifier: ^4.18.2
+        version: 4.18.2
+      winston:
+        specifier: ^3.8.2
+        version: 3.8.2
+    devDependencies:
+      '@types/express':
+        specifier: ^4.17.17
+        version: 4.17.17
       typescript:
         specifier: ^5.0.4
         version: 5.0.4
@@ -352,14 +365,6 @@ packages:
     engines: {node: '>= 0.6'}
     dev: false
 
-  /cors@2.8.5:
-    resolution: {integrity: sha512-KIHbLJqu73RGr/hnbrO9uBeixNGuvSQjul/jdFvS/KFSIH1hWVd1ng7zOHx+YrEfInLG7q4n6GHQ9cDtxv/P6g==}
-    engines: {node: '>= 0.10'}
-    dependencies:
-      object-assign: 4.1.1
-      vary: 1.1.2
-    dev: false
-
   /create-require@1.1.1:
     resolution: {integrity: sha512-dcKFX3jn0MpIaXjisoRvexIJVEKzaq7z2rZKxf+MSr9TkdmHmsU4m2lcLojrj/FHl8mk5VxMmYA+ftRkP/3oKQ==}
     dev: true
@@ -641,11 +646,6 @@ packages:
     engines: {node: '>=10.0.0'}
     dependencies:
       tweetnacl: 1.0.3
-    dev: false
-
-  /object-assign@4.1.1:
-    resolution: {integrity: sha512-rJgTQnkUnH1sFw8yT6VSU3zD3sWmu6sZhIseY8VX+GRu3P6F7Fu+JNDoXfklElbLJSnc3FUQHVe4cU5hj+BcUg==}
-    engines: {node: '>=0.10.0'}
     dev: false
 
   /object-inspect@1.12.3:
