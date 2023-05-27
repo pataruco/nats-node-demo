@@ -23,3 +23,9 @@ services:
       dockerfile: ${PWD}/build/john/Dockerfile
     ports:
       - '4002:4002'
+  paul:
+    build:
+      context: .
+      dockerfile: ${PWD}/build/paul/Dockerfile
+    ports:
+      - '4003:4003'

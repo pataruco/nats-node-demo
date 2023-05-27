@@ -8,7 +8,7 @@ WORKDIR /nats-node-demo
 
 COPY pnpm-lock.yaml pnpm-workspace.yaml package.json  /nats-node-demo/
 
-COPY projects/george/package.json /nats-node-demo/projects/george/
+COPY projects/paul/package.json /nats-node-demo/projects/paul/
 
 COPY projects/shared /nats-node-demo/projects/shared
 
@@ -17,12 +17,12 @@ ENV NATS_SERVER_URL=nats:4222
 RUN set -eu && \
   pnpm install;
 
-COPY projects/george /nats-node-demo/projects/george/
+COPY projects/paul /nats-node-demo/projects/paul/
 
-EXPOSE 4001
+EXPOSE 4003
 EXPOSE 4222
 
 
 ENTRYPOINT [ "pnpm" ]
 
-CMD ["--filter" , "george", "start"]
+CMD ["--filter" , "paul", "start"]

@@ -17,7 +17,6 @@ ENV NATS_SERVER_URL=nats:4222
 RUN set -eu && \
   pnpm install;
 
-
 COPY projects/john /nats-node-demo/projects/john/
 
 EXPOSE 4002
