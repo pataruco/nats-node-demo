@@ -9,12 +9,17 @@ services:
       - '4222:4222'
       - '8222:8222'
     hostname: nats
-    # command: -DVV
+    # command: -DVV # Enable to set debugger and tracer
 
-  john:
+  george:
     build:
       context: .
       dockerfile: ${PWD}/build/george/Dockerfile
     ports:
       - '4001:4001'
-      # - '4222:4222'
+  john:
+    build:
+      context: .
+      dockerfile: ${PWD}/build/john/Dockerfile
+    ports:
+      - '4002:4002'

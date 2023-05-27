@@ -8,7 +8,7 @@ dotenv.config();
 
 const natsServerAddress = process.env.NATS_SERVER_URL || '0.0.0.0:4222';
 
-export const natsClient = await connect({ servers: 'nats:4222' });
+export const natsClient = await connect({ servers: natsServerAddress });
 export const stringCodec = StringCodec();
 
 export const beatlesSubscription = natsClient.subscribe('beatles');
