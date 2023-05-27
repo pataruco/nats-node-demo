@@ -1,9 +1,14 @@
+import dotenv from 'dotenv';
 import { connect, StringCodec, Subscription } from 'nats';
 import { readFile } from 'node:fs/promises';
 
 import { logger } from '../libs/logger.js';
 
-export const natsClient = await connect({ servers: ' 0.0.0.0:4222' });
+dotenv.config();
+
+const natsServerAddress = process.env.NATS_SERVER_URL || '0.0.0.0:4222';
+
+export const natsClient = await connect({ servers: natsServerAddress });
 export const stringCodec = StringCodec();
 
 export const beatlesSubscription = natsClient.subscribe('beatles');

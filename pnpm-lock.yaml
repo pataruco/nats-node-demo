@@ -4,6 +4,34 @@ importers:
 
   .: {}
 
+  projects/george:
+    dependencies:
+      dotenv:
+        specifier: ^16.0.3
+        version: 16.0.3
+      express:
+        specifier: ^4.18.2
+        version: 4.18.2
+      joi:
+        specifier: ^17.9.2
+        version: 17.9.2
+      shared:
+        specifier: workspace:*
+        version: link:../shared
+    devDependencies:
+      '@types/express':
+        specifier: ^4.17.17
+        version: 4.17.17
+      rome:
+        specifier: ^12.1.2
+        version: 12.1.2
+      ts-node:
+        specifier: ^10.9.1
+        version: 10.9.1(@types/node@20.2.4)(typescript@5.0.4)
+      typescript:
+        specifier: ^5.0.4
+        version: 5.0.4
+
   projects/john:
     dependencies:
       dotenv:
@@ -60,8 +88,39 @@ importers:
         specifier: ^5.0.4
         version: 5.0.4
 
+  projects/ringo:
+    dependencies:
+      dotenv:
+        specifier: ^16.0.3
+        version: 16.0.3
+      express:
+        specifier: ^4.18.2
+        version: 4.18.2
+      joi:
+        specifier: ^17.9.2
+        version: 17.9.2
+      shared:
+        specifier: workspace:*
+        version: link:../shared
+    devDependencies:
+      '@types/express':
+        specifier: ^4.17.17
+        version: 4.17.17
+      rome:
+        specifier: ^12.1.2
+        version: 12.1.2
+      ts-node:
+        specifier: ^10.9.1
+        version: 10.9.1(@types/node@20.2.4)(typescript@5.0.4)
+      typescript:
+        specifier: ^5.0.4
+        version: 5.0.4
+
   projects/shared:
     dependencies:
+      dotenv:
+        specifier: ^16.0.3
+        version: 16.0.3
       express:
         specifier: ^4.18.2
         version: 4.18.2
