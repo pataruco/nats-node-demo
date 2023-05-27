@@ -1,0 +1,21 @@
+{
+  "name": "george",
+  "version": "1.0.0",
+  "main": "main.ts",
+  "scripts": {
+    "start": "pnpm ts-node-esm main.ts"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.17",
+    "rome": "^12.1.2",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.0.4"
+  },
+  "dependencies": {
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "joi": "^17.9.2",
+    "shared": "workspace:*"
+  },
+  "type": "module"
+}
