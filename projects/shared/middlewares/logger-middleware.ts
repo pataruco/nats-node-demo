@@ -1,7 +1,7 @@
 import type { NextFunction, Request, Response } from 'express';
 import { readFile } from 'node:fs/promises';
 
-import { logger } from '../libs/logger';
+import { logger } from '../libs/logger.js';
 
 export const httpLoggerMiddleware = async (
   request: Request,
