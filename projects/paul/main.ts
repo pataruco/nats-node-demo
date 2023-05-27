@@ -1,8 +1,8 @@
 import express from 'express';
 import http from 'http';
 
-import { HOST, PORT } from './config';
-import rootRouter from './routes';
+import { HOST, PORT } from './config/index.js';
+import rootRouter from './routes/index.js';
 
 import { errorHandlerMiddleware, httpLoggerMiddleware, logger } from 'shared';
 
@@ -14,10 +14,6 @@ app.use(rootRouter);
 
 const httpServer = http.createServer(app);
 
-const main = async () => {
-  await httpServer.listen({ port: PORT }, () => {
-    logger.info(`server listening 📡 ${JSON.stringify({ HOST, PORT })}`);
-  });
-};
-
-main();
+await httpServer.listen({ port: PORT }, () => {
+  logger.info(`server listening 📡 ${JSON.stringify({ HOST, PORT })}`);
+});

@@ -1,7 +1,7 @@
 import express, { Request, Response } from 'express';
 import Joi from 'joi';
 
-import { getPackageName } from '../config';
+import { getPackageName } from '../config/index.js';
 
 const messageSchema = Joi.object({
   message: Joi.string().min(1).required(),

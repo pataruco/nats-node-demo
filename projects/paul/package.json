@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "main.ts",
   "scripts": {
-    "serve": "pnpm ts-node main.ts"
+    "start": "pnpm ts-node-esm main.ts"
   },
   "devDependencies": {
     "@types/express": "^4.17.17",
@@ -17,5 +17,6 @@
     "joi": "^17.9.2",
     "nats": "^2.14.0",
     "shared": "workspace:*"
-  }
+  },
+  "type": "module"
 }
