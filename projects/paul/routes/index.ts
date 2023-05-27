@@ -2,7 +2,7 @@ import express, { Request, Response } from 'express';
 import Joi from 'joi';
 
 import { packageJsonName } from '../config/index.js';
-import { natsClient, stringCodec } from '../nats/index.js';
+import { BeatlesMessage, natsClient, stringCodec } from '../nats/index.js';
 
 const messageSchema = Joi.object({
   singers: Joi.array()
@@ -35,7 +35,15 @@ rootRouter.post('/', (request: Request, response: Response) => {
 
   const singersString = singers.join(', ');
 
-  natsClient.publish('beatles', stringCodec.encode(JSON.stringify(body)));
+  const payloadToPublish: BeatlesMessage = {
+    from: packageJsonName,
+    to: singers,
+  };
+
+  natsClient.publish(
+    'beatles',
+    stringCodec.encode(JSON.stringify(payloadToPublish)),
+  );
 
   return response.send({ message: `people singing: ${singersString}` });
 });

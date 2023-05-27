@@ -7,16 +7,34 @@ export const stringCodec = StringCodec();
 
 export const beatlesSubscription = natsClient.subscribe('beatles');
 
+export interface BeatlesMessage {
+  from: string;
+  to: string[];
+}
+
+export const singIfReceiveMessage = async () => {
+  for await (const message of beatlesSubscription) {
+    const { from, to }: BeatlesMessage = JSON.parse(
+      stringCodec.decode(message.data),
+    );
+    const shouldSing = to.includes(packageJsonName);
+    if (shouldSing) {
+      logger.warn({
+        from,
+        message: ['la ♪', 'la ♩', 'la ♫', 'la ♪'],
+        to,
+      });
+    }
+  }
+};
+
 export const printNatsSubscribedMessages = async (
   subscription: Subscription,
 ) => {
-  console.log('RUNNING');
   for await (const message of subscription) {
-    console.log('LOGGING');
+    const mesage = JSON.parse(stringCodec.decode(message.data));
     logger.info({
-      from: 'paul',
-      message: JSON.parse(stringCodec.decode(message.data)),
-      to: packageJsonName,
+      message: `message receive from NATS: ${mesage}`,
     });
   }
 };
