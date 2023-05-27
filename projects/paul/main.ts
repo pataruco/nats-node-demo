@@ -4,8 +4,12 @@ import http from 'http';
 import { HOST, PORT } from './config/index.js';
 import rootRouter from './routes/index.js';
 
-import { errorHandlerMiddleware, httpLoggerMiddleware, logger } from 'shared';
-import { singIfReceiveMessage } from './nats/index.js';
+import {
+  errorHandlerMiddleware,
+  httpLoggerMiddleware,
+  logger,
+  singIfReceiveMessage,
+} from 'shared';
 
 const app = express();
 

@@ -1,8 +1,8 @@
 import express, { Request, Response } from 'express';
 import Joi from 'joi';
 
+import { BeatlesMessage, natsClient, stringCodec } from 'shared';
 import { packageJsonName } from '../config/index.js';
-import { BeatlesMessage, natsClient, stringCodec } from '../nats/index.js';
 
 const messageSchema = Joi.object({
   singers: Joi.array()

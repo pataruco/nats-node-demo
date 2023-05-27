@@ -1,6 +1,7 @@
 import { connect, StringCodec, Subscription } from 'nats';
-import { logger } from 'shared';
-import { packageJsonName } from '../config/index.js';
+import { readFile } from 'node:fs/promises';
+
+import { logger } from '../libs/logger.js';
 
 export const natsClient = await connect({ servers: ' 0.0.0.0:4222' });
 export const stringCodec = StringCodec();
@@ -13,11 +14,16 @@ export interface BeatlesMessage {
 }
 
 export const singIfReceiveMessage = async () => {
+  const fileContents = await readFile('./package.json', { encoding: 'utf-8' });
+
+  const { name } = JSON.parse(fileContents);
+
   for await (const message of beatlesSubscription) {
     const { from, to }: BeatlesMessage = JSON.parse(
       stringCodec.decode(message.data),
     );
-    const shouldSing = to.includes(packageJsonName);
+
+    const shouldSing = to.includes(name);
     if (shouldSing) {
       logger.warn({
         from,
