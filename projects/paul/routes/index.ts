@@ -2,6 +2,7 @@ import express, { Request, Response } from 'express';
 import Joi from 'joi';
 
 import { getPackageName } from '../config/index.js';
+import { natsClient, stringCodec } from '../nats/index.js';
 
 const messageSchema = Joi.object({
   message: Joi.string().min(1).required(),
@@ -25,7 +26,7 @@ rootRouter.post('/', (request: Request, response: Response) => {
     return response.status(400).send({ errors: [...errors] });
   }
 
-  // TODO: trigger nats message2
+  natsClient.publish('beatles', stringCodec.encode(body));
 
   return response.send({ message: 'message sent to' });
 });
