@@ -1,11 +1,11 @@
 import { connect, StringCodec, Subscription } from 'nats';
 import { logger } from 'shared';
+import { packageJsonName } from '../config/index.js';
 
 export const natsClient = await connect({ servers: ' 0.0.0.0:4222' });
 export const stringCodec = StringCodec();
 
 export const beatlesSubscription = natsClient.subscribe('beatles');
-// export const beatlesRequest = natsClient.request('beatles.*');
 
 export const printNatsSubscribedMessages = async (
   subscription: Subscription,
@@ -15,7 +15,8 @@ export const printNatsSubscribedMessages = async (
     console.log('LOGGING');
     logger.info({
       from: 'paul',
-      message: stringCodec.decode(message.data),
+      message: JSON.parse(stringCodec.decode(message.data)),
+      to: packageJsonName,
     });
   }
 };

@@ -1,7 +1,7 @@
 import express, { Request, Response } from 'express';
 import Joi from 'joi';
 
-import { getPackageName } from '../config/index.js';
+import { packageJsonName } from '../config/index.js';
 import { natsClient, stringCodec } from '../nats/index.js';
 
 const messageSchema = Joi.object({
@@ -11,8 +11,7 @@ const messageSchema = Joi.object({
 const rootRouter = express.Router();
 
 rootRouter.get('/', async (_request: Request, response: Response) => {
-  const name: string = await getPackageName();
-  response.send(`<h1>${name.toUpperCase()}</h1>`);
+  response.send(`<h1>${packageJsonName.toUpperCase()}</h1>`);
 });
 
 rootRouter.post('/', (request: Request, response: Response) => {
@@ -26,7 +25,7 @@ rootRouter.post('/', (request: Request, response: Response) => {
     return response.status(400).send({ errors: [...errors] });
   }
 
-  natsClient.publish('beatles', stringCodec.encode(body));
+  natsClient.publish('beatles', stringCodec.encode(JSON.stringify(body)));
 
   return response.send({ message: 'message sent to' });
 });
