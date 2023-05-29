@@ -4,9 +4,15 @@
 
 It is a proof of concept using NATS as a connective tissue in an event-driven microservice environment.
 
-We have 4 Node.JS RESTful servers called George, John, Paul, and Ringo connected to a NATS server via a NATS client and listening to events that any of them can trigger.
+We have 4 Node.JS RESTful servers called `george`, `john`, `paul`, and `ringo` connected to a NATS server via a NATS client and listening to events that any of them can trigger.
 
-The idea is that each one of them can publish a message to announce who/whom will "sing."
+The idea is that each of them can publish a message to announce who/whom will "sing" via an array of strings with the name of the services.
+
+If a service is subscribed to the message, it will "sing" as a server log with
+
+```sh
+nats-node-demo-george-1  | {"from":"george","level":"warn","message":["la ♪","la ♩","la ♫","la ♪"],"timestamp":"2023-05-29T09:36:26.470Z","to":["john","george"]}
+```
 
 ![NATS Node.JS demo diagram](docs/assets/nats-node-demo.svg)
 
@@ -46,4 +52,59 @@ nats-node-demo-george-1  | {"level":"info","message":"server listening 📡 {\"H
 | `paul`       | 4003 |
 | `ringo`      | 4004 |
 
--
+- Send `POST` request to one of them with a payload like this. You can add or remove service names from the payload array to make more or fewer services "sing."
+
+```json
+{
+  "singers": ["john"]
+}
+```
+
+```json
+{
+  "singers": ["john", "paul", "george", "ringo"]
+}
+```
+
+```sh
+curl --location '127.0.0.1:4001' \
+--header 'Content-Type: application/json' \
+--data '{
+    "singers": ["john", "george"]
+}'
+```
+
+- You will receive a response like this
+
+```json
+{
+  "message": "people singing: john, george"
+}
+```
+
+- Check the server logs, and you will see the services "sing" like this
+
+```sh
+nats-node-demo-john-1    | {"from":"george","level":"warn","message":["la ♪","la ♩","la ♫","la ♪"],"timestamp":"2023-05-29T09:43:36.179Z","to":["john","george"]}
+nats-node-demo-george-1  | {"from":"george","level":"warn","message":["la ♪","la ♩","la ♫","la ♪"],"timestamp":"2023-05-29T09:43:36.181Z","to":["john","george"]}
+```
+
+- You can send `POST` requests to any of them just by changing the port number
+
+```sh
+# Via george
+curl --location '127.0.0.1:4001' \
+--header 'Content-Type: application/json' \
+--data '{
+    "singers": ["john", "ringo", "paul"]
+}'
+```
+
+```sh
+# Via john
+curl --location '127.0.0.1:4001' \
+--header 'Content-Type: application/json' \
+--data '{
+    "singers": ["john", "george"]
+}'
+```
