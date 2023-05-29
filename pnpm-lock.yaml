@@ -134,6 +134,9 @@ importers:
       '@types/express':
         specifier: ^4.17.17
         version: 4.17.17
+      rome:
+        specifier: ^12.1.2
+        version: 12.1.2
       typescript:
         specifier: ^5.0.4
         version: 5.0.4

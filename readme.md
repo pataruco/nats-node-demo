@@ -16,6 +16,10 @@ nats-node-demo-george-1  | {"from":"george","level":"warn","message":["la ♪","
 
 ![NATS Node.JS demo diagram](docs/assets/nats-node-demo.svg)
 
+## What is NATS
+
+We wrote a [summary](./docs/nats.md) explaining what this technology can do, its benefits, and its comparison against other technologies.
+
 ## How to run
 
 The five services, a NATS server and 4 Node.JS/Express servers, can be built and run using `docker compose`.

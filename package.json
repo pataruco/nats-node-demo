@@ -1,4 +1,7 @@
 {
   "name": "nats-node-demo",
-  "version": "1.0.0"
+  "version": "1.0.0",
+  "scripts": {
+    "lint": "pnpm --stream -r run lint"
+  }
 }

@@ -1,5 +1,5 @@
 import dotenv from 'dotenv';
-import { connect, StringCodec, Subscription } from 'nats';
+import { StringCodec, Subscription, connect } from 'nats';
 import { readFile } from 'node:fs/promises';
 
 import { logger } from '../libs/logger.js';
