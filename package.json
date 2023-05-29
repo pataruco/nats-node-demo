@@ -2,6 +2,7 @@
   "name": "nats-node-demo",
   "version": "1.0.0",
   "scripts": {
+    "format": "pnpm --stream -r run format",
     "lint": "pnpm --stream -r run lint"
   }
 }
