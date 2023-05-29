@@ -4,7 +4,7 @@
 
 It is a proof of concept using NATS as a connective tissue in an event-driven microservice environment.
 
-We have 4 Node.JS RESTful servers called `george`, `john`, `paul`, and `ringo` connected to a NATS server via a NATS client and listening to events that any of them can trigger.
+We have 4 Node.JS RESTful servers called `george`, `john`, `paul`, and `ringo` connected to a NATS server via a NATS client and listening to events that any can trigger.
 
 The idea is that each of them can publish a message to announce who/whom will "sing" via an array of strings with the name of the services.
 
@@ -15,6 +15,10 @@ nats-node-demo-george-1  | {"from":"george","level":"warn","message":["la ♪","
 ```
 
 ![NATS Node.JS demo diagram](docs/assets/nats-node-demo.svg)
+
+## What is NATS
+
+We wrote a [summary](./docs/nats.md) explaining what this technology can do, its benefits, and its comparison against other technologies.
 
 ## How to run
 
@@ -43,7 +47,7 @@ nats-node-demo-john-1    | {"level":"info","message":"server listening 📡 {\"H
 nats-node-demo-george-1  | {"level":"info","message":"server listening 📡 {\"HOST\":\"127.0.0.1\",\"PORT\":\"4001\"}","timestamp":"2023-05-29T09:09:53.179Z"}
 ```
 
-- As you can see here, all of them are running in `localhost` (127.0.0.1), but in different ports
+- All of them are running in `localhost` (127.0.0.1) but in different ports
 
 | Service name | Port |
 | ------------ | ---- |
@@ -106,5 +110,90 @@ curl --location '127.0.0.1:4001' \
 --header 'Content-Type: application/json' \
 --data '{
     "singers": ["john", "george"]
+}'
+```
+
+## How to develop
+
+This repo is configured as a monorepo managing packages and dependencies with `pnpm` [workspaces](https://pnpm.io/workspaces)
+
+- First, you need to install dependencies
+
+```sh
+pnpm i
+```
+
+- In a terminal tab, you can run the NATS server using `docker compose`
+
+```sh
+ docker compose -f ./docker-compose-development.yml up
+```
+
+### Node.js / Express servers
+
+Each server is under the folder `projects` and is sharing packages by the `shared` NPM package.
+
+From the root of the monorepo you can initiate every service (4 of them) by running in each terminal tab `pnpm --filter "<NAME OF THE SERVICE>" start`
+
+```sh
+pnpm --filter "george" start
+```
+
+Each server connects to the NATS server using a JavaScript NATS client.
+
+```ts
+import dotenv from 'dotenv';
+import { connect, StringCodec, Subscription } from 'nats';
+
+dotenv.config();
+
+const natsServerAddress = process.env.NATS_SERVER_URL || '0.0.0.0:4222';
+
+export const natsClient = await connect({ servers: natsServerAddress });
+```
+
+Each server subscribes to a subject
+
+```ts
+export const beatlesSubscription = natsClient.subscribe('beatles');
+```
+
+And "sing" as a server log if a message from the subject subscribed has its service name
+
+```ts
+export const singIfReceiveMessage = async () => {
+  const fileContents = await readFile('./package.json', { encoding: 'utf-8' });
+  // Get the name of the service
+  const { name } = JSON.parse(fileContents);
+
+  // Loop from all the messages from the topic subscribed
+  for await (const message of beatlesSubscription) {
+    const { from, to }: BeatlesMessage = JSON.parse(
+      // decode binary to string from message data
+      stringCodec.decode(message.data),
+    );
+
+    // Evaluates message has the service name
+    const shouldSing = to.includes(name);
+    if (shouldSing) {
+      // Sing as a server log
+      logger.warn({
+        from,
+        message: ['la ♪', 'la ♩', 'la ♫', 'la ♪'],
+        to,
+      });
+    }
+  }
+};
+```
+
+Each server can receive `POST` requests to publish a message to the NATS server.
+
+```sh
+# Via george
+curl --location '127.0.0.1:4001' \
+--header 'Content-Type: application/json' \
+--data '{
+    "singers": ["john", "ringo", "paul"]
 }'
 ```

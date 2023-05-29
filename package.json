@@ -1,12 +1,8 @@
 {
   "name": "nats-node-demo",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC"
+    "format": "pnpm --stream -r run format",
+    "lint": "pnpm --stream -r run lint"
+  }
 }

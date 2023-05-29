@@ -3,6 +3,8 @@
   "version": "1.0.0",
   "main": "main.ts",
   "scripts": {
+    "format": "pnpm rome format *.ts",
+    "lint": "pnpm rome check .",
     "start": "pnpm ts-node-esm main.ts"
   },
   "devDependencies": {

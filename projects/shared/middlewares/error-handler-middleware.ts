@@ -1,4 +1,5 @@
 import type { NextFunction, Request, Response } from 'express';
+
 import { logger } from '../libs/logger.js';
 
 export const errorHandlerMiddleware = (
