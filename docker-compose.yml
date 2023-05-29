@@ -29,9 +29,9 @@ services:
       dockerfile: ${PWD}/build/paul/Dockerfile
     ports:
       - '4003:4003'
-  # ringo:
-  #   build:
-  #     context: .
-  #     dockerfile: ${PWD}/build/ringo/Dockerfile
-  #   ports:
-  #     - '4004:4004'
+  ringo:
+    build:
+      context: .
+      dockerfile: ${PWD}/build/ringo/Dockerfile
+    ports:
+      - '4004:4004'
