@@ -33,15 +33,15 @@ We need to connect to a server. For this demo, we are connecting to a remote ser
 In another terminal tab, subscribe to a subject
 
 ```sh
-   nats sub "101ways"
+   nats sub "red-badger"
 # \_______/ \______/
 #  Subscribe subject name
 ```
 
-In another terminal tab, publish a subject
+In another terminal tab, publish to a subject
 
 ```sh
-   nats pub 101ways "hello Jordan"
+   nats pub red-badger "Hello there 👋"
 # \_______/\______/ \____________/
 # publish  subject   payload
 ```
