@@ -5,7 +5,7 @@
   "scripts": {
     "format": "pnpm rome format *.ts",
     "lint": "pnpm rome check .",
-    "start": "pnpm ts-node-esm main.ts"
+    "start": "node --loader ts-node/esm main.ts"
   },
   "devDependencies": {
     "@types/express": "^4.17.17",
