@@ -1,6 +1,6 @@
-import express, { Request, Response } from 'express';
+import express, { type Request, type Response } from 'express';
 import Joi from 'joi';
-import { BeatlesMessage, natsClient, stringCodec } from 'shared';
+import { type BeatlesMessage, natsClient, stringCodec } from 'shared';
 
 import { packageJsonName } from '../config/index.js';
 

@@ -1,6 +1,6 @@
-import dotenv from 'dotenv';
-import { StringCodec, Subscription, connect } from 'nats';
 import { readFile } from 'node:fs/promises';
+import dotenv from 'dotenv';
+import { StringCodec, type Subscription, connect } from 'nats';
 
 import { logger } from '../libs/logger.js';
 
