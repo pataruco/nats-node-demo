@@ -1,37 +1,47 @@
-version: '2'
+# One image, four containers. Each one gets its name and port from the
+# environment, so adding a fifth singer is three lines here.
+x-service: &service
+  build: .
+  depends_on:
+    - nats
 
 services:
   nats:
-    image: 'nats:latest'
-    expose:
-      - '4222'
+    image: nats:latest
+    hostname: nats
     ports:
       - '4222:4222'
       - '8222:8222'
-    hostname: nats
-    # command: -DVV # Enable to set debugger and tracer
+    # command: -DVV # uncomment for debug and trace output
 
   george:
-    build:
-      context: .
-      dockerfile: ${PWD}/build/george/Dockerfile
+    <<: *service
+    environment:
+      SERVICE_NAME: george
+      PORT: 4001
     ports:
       - '4001:4001'
+
   john:
-    build:
-      context: .
-      dockerfile: ${PWD}/build/john/Dockerfile
+    <<: *service
+    environment:
+      SERVICE_NAME: john
+      PORT: 4002
     ports:
       - '4002:4002'
+
   paul:
-    build:
-      context: .
-      dockerfile: ${PWD}/build/paul/Dockerfile
+    <<: *service
+    environment:
+      SERVICE_NAME: paul
+      PORT: 4003
     ports:
       - '4003:4003'
+
   ringo:
-    build:
-      context: .
-      dockerfile: ${PWD}/build/ringo/Dockerfile
+    <<: *service
+    environment:
+      SERVICE_NAME: ringo
+      PORT: 4004
     ports:
       - '4004:4004'

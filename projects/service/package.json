@@ -1,0 +1,21 @@
+{
+  "name": "service",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node main.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@nats-io/transport-node": "^3.4.0",
+    "express": "^5.2.1",
+    "joi": "^18.2.9",
+    "winston": "^3.19.0"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "@types/node": "^24.19.1",
+    "typescript": "^7.0.2"
+  }
+}

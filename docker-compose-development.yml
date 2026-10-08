@@ -1,13 +1,10 @@
-version: '2'
-
+# NATS only, with debug and trace output. Run the services from your
+# terminal with `pnpm start:<name>`.
 services:
   nats:
-    image: 'nats:latest'
-    expose:
-      - '4222'
+    image: nats:latest
+    hostname: nats
     ports:
       - '4222:4222'
       - '8222:8222'
-    hostname: nats
-    command: -DVV # Enable to set debugger and tracer
-
+    command: -DVV

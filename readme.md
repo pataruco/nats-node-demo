@@ -1,201 +1,169 @@
-# NATS Node.JS demo
+# NATS Node.js demo
 
-## What is it
+A proof of concept for event-driven microservices, using [NATS](https://nats.io) as the message bus.
 
-It is a proof of concept using NATS as a connective tissue in an event-driven microservice environment.
+One Express service runs 4 times, as `george`, `john`, `paul` and `ringo`. All 4 subscribe to the same NATS subject, `beatles`. Send a `POST` request to any of them naming who should sing, and the named services "sing" in their logs:
 
-We have 4 Node.JS RESTful servers called `george`, `john`, `paul`, and `ringo` connected to a NATS server via a NATS client and listening to events that any can trigger.
-
-The idea is that each of them can publish a message to announce who/whom will "sing" via an array of strings with the name of the services.
-
-If a service is subscribed to the message, it will "sing" as a server log with
-
-```sh
-nats-node-demo-george-1  | {"from":"george","level":"warn","message":["la ♪","la ♩","la ♫","la ♪"],"timestamp":"2023-05-29T09:36:26.470Z","to":["john","george"]}
+```
+john-1    | {"from":"george","level":"warn","message":["la ♪","la ♩","la ♫","la ♪"],"timestamp":"2026-10-08T15:09:51.673Z","to":["john","george"]}
 ```
 
-![NATS Node.JS demo diagram](docs/assets/nats-node-demo.svg)
+![Four services named george, john, paul and ringo publish to and subscribe from the beatles subject on one NATS server](docs/assets/nats-node-demo.svg)
 
-## What is NATS
+## Before you start
 
-We wrote a [summary](./docs/nats.md) explaining what this technology can do, its benefits, and its comparison against other technologies.
+You need:
 
-We also wrote how to experience it just using [NATS CLI tools](./docs/cli-demo.md)
+- Docker with Compose, to run NATS and the services
+- Node.js 24 and pnpm 12, only if you want to run a service outside Docker (`.nvmrc` pins the Node version)
 
-## How to run
+Five containers run at once, so give your container runtime enough resources. With [colima](https://github.com/abiosoft/colima) we use `colima start --cpu 4 --memory 8 --disk 10`.
 
-The five services, a NATS server and 4 Node.JS/Express servers, can be built and run using `docker compose`.
+## Run the demo with Docker
 
-Because of the number of services running, we suggest increasing resources in your container runtime. For example, we develop this using [`colima`](https://github.com/abiosoft/colima), and we initiate the runtime with `colima start --cpu 4 --memory 8 --disk 10`
+1. Build the service image:
 
-- Build services
+   ```sh
+   docker compose build
+   ```
+
+2. Start NATS and the 4 services:
+
+   ```sh
+   docker compose up
+   ```
+
+3. Wait until each service logs that it is listening:
+
+   ```
+   george-1  | {"level":"info","message":"server listening 📡 {\"SERVICE_NAME\":\"george\",\"PORT\":4001}","timestamp":"..."}
+   ```
+
+Each service listens on `127.0.0.1` on its own port:
+
+| Service  | Port |
+| -------- | ---- |
+| `george` | 4001 |
+| `john`   | 4002 |
+| `paul`   | 4003 |
+| `ringo`  | 4004 |
+
+## Make the services sing
+
+Send a `POST` request to any service with a `singers` array. Use any of the 4 names, in any order.
 
 ```sh
-docker compose build
+curl 127.0.0.1:4001 \
+  --header 'Content-Type: application/json' \
+  --data '{"singers": ["john", "george"]}'
 ```
 
-- Run services
-
-```sh
-docker compose up
-```
-
-- Once services are up and running, you can find server logs for the4 Node.JS/Express server
-
-```sh
-nats-node-demo-paul-1    | {"level":"info","message":"server listening 📡 {\"HOST\":\"127.0.0.1\",\"PORT\":\"4003\"}","timestamp":"2023-05-29T09:09:52.911Z"}
-nats-node-demo-ringo-1   | {"level":"info","message":"server listening 📡 {\"HOST\":\"127.0.0.1\",\"PORT\":\"4004\"}","timestamp":"2023-05-29T09:09:53.149Z"}
-nats-node-demo-john-1    | {"level":"info","message":"server listening 📡 {\"HOST\":\"127.0.0.1\",\"PORT\":\"4002\"}","timestamp":"2023-05-29T09:09:53.164Z"}
-nats-node-demo-george-1  | {"level":"info","message":"server listening 📡 {\"HOST\":\"127.0.0.1\",\"PORT\":\"4001\"}","timestamp":"2023-05-29T09:09:53.179Z"}
-```
-
-- All of them are running in `localhost` (127.0.0.1) but in different ports
-
-| Service name | Port |
-| ------------ | ---- |
-| `george`     | 4001 |
-| `john`       | 4002 |
-| `paul`       | 4003 |
-| `ringo`      | 4004 |
-
-- Send `POST` request to one of them with a payload like this. You can add or remove service names from the payload array to make more or fewer services "sing."
+The service you called replies straight away:
 
 ```json
-{
-  "singers": ["john"]
-}
+{ "message": "people singing: john, george" }
 ```
+
+Then every service named in `singers` logs a line like this, whether or not it is the one you called:
+
+```
+john-1    | {"from":"george","level":"warn","message":["la ♪","la ♩","la ♫","la ♪"],"timestamp":"...","to":["john","george"]}
+george-1  | {"from":"george","level":"warn","message":["la ♪","la ♩","la ♫","la ♪"],"timestamp":"...","to":["john","george"]}
+```
+
+To publish from a different service, change the port. This asks `john` to make `paul` and `ringo` sing:
+
+```sh
+curl 127.0.0.1:4002 \
+  --header 'Content-Type: application/json' \
+  --data '{"singers": ["paul", "ringo"]}'
+```
+
+### If the request is wrong
+
+The service replies with status 400 and says what to fix. For example, `{"singers": ["yoko"]}` gets:
 
 ```json
-{
-  "singers": ["john", "paul", "george", "ringo"]
-}
+{ "errors": ["\"singers[0]\" must be one of [george, john, paul, ringo]"] }
 ```
 
-```sh
-curl --location '127.0.0.1:4001' \
---header 'Content-Type: application/json' \
---data '{
-    "singers": ["john", "george"]
-}'
-```
+## Run a service outside Docker
 
-- You will receive a response like this
+Useful when you want to change the code and restart quickly.
 
-```json
-{
-  "message": "people singing: john, george"
-}
-```
+1. Install dependencies:
 
-- Check the server logs, and you will see the services "sing" like this
+   ```sh
+   pnpm install
+   ```
 
-```sh
-nats-node-demo-john-1    | {"from":"george","level":"warn","message":["la ♪","la ♩","la ♫","la ♪"],"timestamp":"2023-05-29T09:43:36.179Z","to":["john","george"]}
-nats-node-demo-george-1  | {"from":"george","level":"warn","message":["la ♪","la ♩","la ♫","la ♪"],"timestamp":"2023-05-29T09:43:36.181Z","to":["john","george"]}
-```
+2. Start NATS on its own. This Compose file also turns on NATS debug and trace output:
 
-- You can send `POST` requests to any of them just by changing the port number
+   ```sh
+   docker compose -f docker-compose-development.yml up
+   ```
 
-```sh
-# Via george
-curl --location '127.0.0.1:4001' \
---header 'Content-Type: application/json' \
---data '{
-    "singers": ["john", "ringo", "paul"]
-}'
-```
+3. In another terminal, start a service by name:
 
-```sh
-# Via john
-curl --location '127.0.0.1:4001' \
---header 'Content-Type: application/json' \
---data '{
-    "singers": ["john", "george"]
-}'
-```
+   ```sh
+   pnpm start:george
+   ```
 
-## How to develop
+   The same works for `start:john`, `start:paul` and `start:ringo`. Each script sets `SERVICE_NAME` and `PORT`. You can set them yourself instead:
 
-This repo is configured as a monorepo managing packages and dependencies with `pnpm` [workspaces](https://pnpm.io/workspaces)
+   ```sh
+   SERVICE_NAME=george PORT=4001 pnpm --filter service start
+   ```
 
-- First, you need to install dependencies
+4. Lint, format and type-check from the repo root:
 
-```sh
-pnpm i
-```
+   ```sh
+   pnpm lint        # Biome: lint rules, formatting and import order
+   pnpm format      # Biome: rewrite files in place
+   pnpm typecheck   # tsc --noEmit
+   ```
 
-- In a terminal tab, you can run the NATS server using `docker compose`
+Node 24 runs the TypeScript source directly by stripping the types, so there is no build step.
 
-```sh
- docker compose -f ./docker-compose-development.yml up
-```
+## How it works
 
-### Node.js / Express servers
+There is one service, in `projects/service`. Its name and port come from the environment, and Docker Compose starts the same image 4 times with different values.
 
-Each server is under the folder `projects` and is sharing packages by the `shared` NPM package.
+| Variable          | Required | Default        | What it does                                                                      |
+| ----------------- | -------- | -------------- | --------------------------------------------------------------------------------- |
+| `SERVICE_NAME`    | Yes      |                | One of `george`, `john`, `paul`, `ringo`. The service refuses to start otherwise. |
+| `PORT`            | No       | `4000`         | HTTP port to listen on.                                                           |
+| `NATS_SERVER_URL` | No       | `0.0.0.0:4222` | NATS server address. Compose sets it to `nats:4222`.                              |
 
-From the root of the monorepo you can initiate every service (4 of them) by running in each terminal tab `pnpm --filter "<NAME OF THE SERVICE>" start`
-
-```sh
-pnpm --filter "george" start
-```
-
-Each server connects to the NATS server using a JavaScript NATS client.
+On start-up the service connects to NATS and subscribes to the `beatles` subject. Every message on that subject is a JSON object with `from` and `to`. The service sings only if its own name is in `to` (see [`projects/service/nats.ts`](projects/service/nats.ts)):
 
 ```ts
-import dotenv from 'dotenv';
-import { connect, StringCodec, Subscription } from 'nats';
+for await (const message of beatlesSubscription) {
+  const { from, to } = message.json<BeatlesMessage>();
 
-dotenv.config();
-
-const natsServerAddress = process.env.NATS_SERVER_URL || '0.0.0.0:4222';
-
-export const natsClient = await connect({ servers: natsServerAddress });
-```
-
-Each server subscribes to a subject
-
-```ts
-export const beatlesSubscription = natsClient.subscribe('beatles');
-```
-
-And "sing" as a server log if a message from the subject subscribed has its service name
-
-```ts
-export const singIfReceiveMessage = async () => {
-  const fileContents = await readFile('./package.json', { encoding: 'utf-8' });
-  // Get the name of the service
-  const { name } = JSON.parse(fileContents);
-
-  // Loop from all the messages from the topic subscribed
-  for await (const message of beatlesSubscription) {
-    const { from, to }: BeatlesMessage = JSON.parse(
-      // decode binary to string from message data
-      stringCodec.decode(message.data),
-    );
-
-    // Evaluates message has the service name
-    const shouldSing = to.includes(name);
-    if (shouldSing) {
-      // Sing as a server log
-      logger.warn({
-        from,
-        message: ['la ♪', 'la ♩', 'la ♫', 'la ♪'],
-        to,
-      });
-    }
+  if (to.includes(SERVICE_NAME)) {
+    logger.warn({ from, message: ['la ♪', 'la ♩', 'la ♫', 'la ♪'], to });
   }
-};
+}
 ```
 
-Each server can receive `POST` requests to publish a message to the NATS server.
+A `POST /` request validates the body with Joi, then publishes it (see [`projects/service/routes.ts`](projects/service/routes.ts)):
 
-```sh
-# Via george
-curl --location '127.0.0.1:4001' \
---header 'Content-Type: application/json' \
---data '{
-    "singers": ["john", "ringo", "paul"]
-}'
+```ts
+natsClient.publish('beatles', JSON.stringify({ from: SERVICE_NAME, to: singers }));
 ```
+
+NATS delivers the message to every subscriber, including the publisher. That is why a service can make itself sing.
+
+## Repo layout
+
+- `projects/service/` – the Express service ([readme](projects/service/readme.md))
+- `Dockerfile` – builds the service image
+- `docker-compose.yml` – NATS plus 4 copies of the service
+- `docker-compose-development.yml` – NATS only, for local development
+- `docs/` – background reading and the diagram
+
+## Read more
+
+- [What NATS is and when to use it](docs/nats.md)
+- [Try NATS from the command line](docs/cli-demo.md)
