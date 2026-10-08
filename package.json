@@ -1,9 +1,21 @@
 {
   "name": "nats-node-demo",
   "version": "1.0.0",
-  "scripts": {
-    "format": "pnpm --stream -r run format",
-    "lint": "pnpm --stream -r run lint"
+  "private": true,
+  "engines": {
+    "node": ">=24"
   },
-  "packageManager": "pnpm@9.15.4+sha512.b2dc20e2fc72b3e18848459b37359a32064663e5627a51e4c74b2c29dd8e8e0491483c3abb40789cfd578bf362fb6ba8261b05f0387d76792ed6e23ea3b1b6a0"
+  "packageManager": "pnpm@12.10.1+sha512.ba40a37eb1a370d60fea8c4cf1d364c13bcccef518e98ad2bcee954f539d38da37458e58261a3fa55e06523450ea0ffff9f497b135be41f2c15c1642bacace6c",
+  "scripts": {
+    "lint": "biome check .",
+    "format": "biome format --write .",
+    "typecheck": "pnpm --filter service typecheck",
+    "start:george": "SERVICE_NAME=george PORT=4001 pnpm --filter service start",
+    "start:john": "SERVICE_NAME=john PORT=4002 pnpm --filter service start",
+    "start:paul": "SERVICE_NAME=paul PORT=4003 pnpm --filter service start",
+    "start:ringo": "SERVICE_NAME=ringo PORT=4004 pnpm --filter service start"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.5.15"
+  }
 }
